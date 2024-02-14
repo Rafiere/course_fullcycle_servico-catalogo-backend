@@ -1,7 +1,7 @@
 package com.projetopraticobackend.servicocatalogo.application;
 
 
-import com.projetopraticobackend.servicocatalogo.domain.Category;
+import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 
 public class UseCase {
 
