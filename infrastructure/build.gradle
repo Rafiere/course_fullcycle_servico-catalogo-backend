@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.projetopraticobackend.servicocatalogo.infrastructure'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(project(':domain')) //Estamos dizendo que a infraestrutura depende do domínio, assim, ela pode usar as classes do domínio.
+    implementation(project(':application')) //Estamos dizendo que a infraestrutura depende da aplicação, assim, ela pode usar as classes da aplicação.
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
