@@ -1,6 +1,7 @@
 package com.projetopraticobackend.servicocatalogo.domain.category;
 
 import com.projetopraticobackend.servicocatalogo.domain.AgregateRoot;
+import com.projetopraticobackend.servicocatalogo.domain.validation.ValidationHandler;
 
 import java.time.Instant;
 
@@ -45,6 +46,13 @@ public class Category extends AgregateRoot<CategoryID> {
                 now,
                 now,
                 null);
+    }
+
+    /* Utilizaremos um validador externo, que é uma classe apenas para implementar
+    * a validação da "Category". */
+    @Override
+    public void validate(final ValidationHandler handler) {
+        new CategoryValidator(this, handler).validate();
     }
 
     public String getName() {
