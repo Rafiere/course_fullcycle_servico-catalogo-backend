@@ -1,11 +1,11 @@
 package com.projetopraticobackend.servicocatalogo.domain.category;
 
+import com.projetopraticobackend.servicocatalogo.domain.AgregateRoot;
+
 import java.time.Instant;
-import java.util.UUID;
 
-public class Category {
+public class Category extends AgregateRoot<CategoryID> {
 
-    private String id;
     private String name;
     private String description;
     private boolean active;
@@ -13,7 +13,7 @@ public class Category {
     private Instant updatedAt;
     private Instant deletedAt;
 
-    private Category(final String id,
+    private Category(final CategoryID id,
                     final String name,
                     final String description,
                     final boolean active,
@@ -21,7 +21,7 @@ public class Category {
                     final Instant updatedAt,
                     final Instant deletedAt) {
 
-        this.id = id;
+        super(id);
         this.name = name;
         this.description = description;
         this.active = active;
@@ -35,7 +35,7 @@ public class Category {
                                        final String description,
                                        final boolean active) {
 
-        final var id = UUID.randomUUID().toString();
+        final var id = CategoryID.unique();
         final var now = Instant.now();
 
         return new Category(id,
@@ -45,10 +45,6 @@ public class Category {
                 now,
                 now,
                 null);
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {
