@@ -1,5 +1,6 @@
 package com.projetopraticobackend.servicocatalogo.domain;
 
+import com.projetopraticobackend.servicocatalogo.domain.validation.ValidationHandler;
 import com.projetopraticobackend.servicocatalogo.domain.valueobjects.Identifier;
 
 import java.util.Objects;
@@ -14,6 +15,14 @@ public abstract class Entity<ID extends Identifier> {
         Objects.requireNonNull(id, "'id' should not be null");
         this.id = id;
     }
+
+    /* Todas as entidades, segundo o DDD, devem saber se validar. */
+    /* Cada entidade poderá utilizar um "Handler" diferente, e esse "Handler" seguirá
+    * a interface. */
+    /* Inicialmente, utilizaremos o "NotificationHandler", que é um "Handler" responsável
+    * por acumular os erros, porém, posteriormente, podemos utilizar outro handler, que lança
+    * a exception assim que o erro ocorrer, por exemplo. */
+    public abstract void validate(ValidationHandler handler);
 
     public ID getId() {
         return id;
