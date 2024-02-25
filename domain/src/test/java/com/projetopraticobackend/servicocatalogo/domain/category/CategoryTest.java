@@ -143,6 +143,8 @@ public class CategoryTest {
         Assertions.assertNull(actualCategory.getDeletedAt());
     }
 
+    /* O teste abaixo fará o teste utilizando o "ThrowsValidationHandler", ao invés do "NotificationHandler" ou
+     * seja, se um erro ocorrer, ele será lançado imediatamente ao invés de acumular. */
     @Test
     public void givenAValidFalseIsActive_whenCallNewCategoryAndValidate_thenInstantiateACategory(){
 
@@ -163,5 +165,81 @@ public class CategoryTest {
         Assertions.assertNotNull(actualCategory.getCreatedAt());
         Assertions.assertNotNull(actualCategory.getUpdatedAt());
         Assertions.assertNotNull(actualCategory.getDeletedAt());
+    }
+
+    /* O teste abaixo fará o teste utilizando o "ThrowsValidationHandler", ao invés do "NotificationHandler" ou
+     * seja, se um erro ocorrer, ele será lançado imediatamente ao invés de acumular. */
+    @Test
+    public void givenAValidActiveCategory_whenCallDeactivate_thenReturnCategoryInactivated(){
+
+        final var initialName = "Filmes";
+        final var initialDescription = "A categoria mais assistida.";
+        final var initialIsActive = true;
+
+        final var expectedIsActive = false;
+
+        final var initialCategory = Category.newCategory(initialName, initialDescription, initialIsActive);
+
+        Assertions.assertDoesNotThrow(() -> initialCategory.validate(new ThrowsValidationHandler()));
+
+        /* O "createdAt" não deve ser modificado. */
+        final var createdAt = initialCategory.getCreatedAt();
+        /* Vamos mudar o comportamento de uma categoria, logo, o "updatedAt" deve ser modificado. */
+        final var updatedAt = initialCategory.getUpdatedAt();
+
+        Assertions.assertTrue(initialCategory.isActive());
+        Assertions.assertNull(initialCategory.getDeletedAt());
+
+        final var actualCategory = initialCategory.deactivate();
+
+        /* Após desativarmos a categoria, ela deve continuar válida. */
+        Assertions.assertDoesNotThrow(() -> initialCategory.validate(new ThrowsValidationHandler()));
+
+        Assertions.assertEquals(initialCategory.getId(), actualCategory.getId());
+        Assertions.assertEquals(initialCategory.getName(), actualCategory.getName());
+        Assertions.assertEquals(initialCategory.getDescription(), actualCategory.getDescription());
+        Assertions.assertEquals(actualCategory.isActive(), expectedIsActive);
+
+        Assertions.assertEquals(actualCategory.getCreatedAt(), createdAt);
+        Assertions.assertTrue(actualCategory.getUpdatedAt().isAfter(updatedAt));
+        Assertions.assertNotNull(actualCategory.getDeletedAt());
+    }
+
+    /* O teste abaixo fará o teste utilizando o "ThrowsValidationHandler", ao invés do "NotificationHandler" ou
+     * seja, se um erro ocorrer, ele será lançado imediatamente ao invés de acumular. */
+    @Test
+    public void givenAValidInactiveCategory_whenCallActivate_thenReturnCategoryActivated(){
+
+        final var initialName = "Filmes";
+        final var initialDescription = "A categoria mais assistida.";
+        final var initialIsActive = false;
+
+        final var expectedIsActive = true;
+
+        final var initialCategory = Category.newCategory(initialName, initialDescription, initialIsActive);
+
+        Assertions.assertDoesNotThrow(() -> initialCategory.validate(new ThrowsValidationHandler()));
+
+        /* O "createdAt" não deve ser modificado. */
+        final var createdAt = initialCategory.getCreatedAt();
+        /* Vamos mudar o comportamento de uma categoria, logo, o "updatedAt" deve ser modificado. */
+        final var updatedAt = initialCategory.getUpdatedAt();
+
+        Assertions.assertFalse(initialCategory.isActive());
+        Assertions.assertNotNull(initialCategory.getDeletedAt());
+
+        final var actualCategory = initialCategory.activate();
+
+        /* Após desativarmos a categoria, ela deve continuar válida. */
+        Assertions.assertDoesNotThrow(() -> initialCategory.validate(new ThrowsValidationHandler()));
+
+        Assertions.assertEquals(initialCategory.getId(), actualCategory.getId());
+        Assertions.assertEquals(initialCategory.getName(), actualCategory.getName());
+        Assertions.assertEquals(initialCategory.getDescription(), actualCategory.getDescription());
+        Assertions.assertEquals(actualCategory.isActive(), expectedIsActive);
+
+        Assertions.assertEquals(actualCategory.getCreatedAt(), createdAt);
+        Assertions.assertTrue(actualCategory.getUpdatedAt().isAfter(updatedAt));
+        Assertions.assertNull(actualCategory.getDeletedAt());
     }
 }
