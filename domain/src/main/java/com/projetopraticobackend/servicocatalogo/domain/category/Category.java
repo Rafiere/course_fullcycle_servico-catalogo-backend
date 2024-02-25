@@ -49,6 +49,28 @@ public class Category extends AgregateRoot<CategoryID> {
                 deletedAt);
     }
 
+    public Category activate(){
+        if(getDeletedAt() != null){
+            this.deletedAt = null;
+        }
+
+        this.active = true;
+        this.updatedAt = Instant.now();
+
+        return this;
+    }
+
+    public Category deactivate(){
+        if(getDeletedAt() == null){ //Se estamos desativando uma categoria que já está desativada, não mudaremos a data de desativação.
+            this.deletedAt = Instant.now();
+        }
+
+        this.active = false;
+        this.updatedAt = Instant.now();
+
+        return this;
+    }
+
     /* Utilizaremos um validador externo, que é uma classe apenas para implementar
     * a validação da "Category". */
     @Override
