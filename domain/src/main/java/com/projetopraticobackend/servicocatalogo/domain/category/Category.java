@@ -38,6 +38,7 @@ public class Category extends AgregateRoot<CategoryID> {
 
         final var id = CategoryID.unique();
         final var now = Instant.now();
+        final var deletedAt = active ? null : now;
 
         return new Category(id,
                 name,
@@ -45,7 +46,7 @@ public class Category extends AgregateRoot<CategoryID> {
                 active,
                 now,
                 now,
-                null);
+                deletedAt);
     }
 
     /* Utilizaremos um validador externo, que é uma classe apenas para implementar
