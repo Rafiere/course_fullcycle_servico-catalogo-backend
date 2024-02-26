@@ -71,6 +71,24 @@ public class Category extends AgregateRoot<CategoryID> {
         return this;
     }
 
+    public Category update(final String name,
+                           final String description,
+                           final boolean isActive){
+
+        this.name = name;
+        this.description = description;
+
+        if (isActive) {
+            activate();
+        } else {
+            deactivate();
+        }
+
+        this.updatedAt = Instant.now();
+
+        return this;
+    }
+
     /* Utilizaremos um validador externo, que é uma classe apenas para implementar
     * a validação da "Category". */
     @Override

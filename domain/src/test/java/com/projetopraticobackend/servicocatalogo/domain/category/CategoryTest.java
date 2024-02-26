@@ -242,4 +242,118 @@ public class CategoryTest {
         Assertions.assertTrue(actualCategory.getUpdatedAt().isAfter(updatedAt));
         Assertions.assertNull(actualCategory.getDeletedAt());
     }
+
+    /* O teste abaixo fará o teste utilizando o "ThrowsValidationHandler", ao invés do "NotificationHandler" ou
+     * seja, se um erro ocorrer, ele será lançado imediatamente ao invés de acumular. */
+    @Test
+    public void givenAValidCategory_whenCallUpdate_thenReturnCategoryUpdated(){
+
+        final var initialName = "Film";
+        final var initialDescription = "A description";
+        final var initialIsActive = true;
+
+        final var expectedName = "Filmes";
+        final var expectedDescription = "";
+        final var expectedIsActive = true;
+
+        final var initialCategory = Category.newCategory(initialName, initialDescription, initialIsActive);
+
+        Assertions.assertDoesNotThrow(() -> initialCategory.validate(new ThrowsValidationHandler()));
+
+        /* O "createdAt" não deve ser modificado. */
+        final var createdAt = initialCategory.getCreatedAt();
+        /* Vamos mudar o comportamento de uma categoria, logo, o "updatedAt" deve ser modificado. */
+        final var updatedAt = initialCategory.getUpdatedAt();
+
+        final var updatedCategory = initialCategory.update(expectedName, expectedDescription, expectedIsActive);
+
+        Assertions.assertDoesNotThrow(() -> updatedCategory.validate(new ThrowsValidationHandler()));
+
+        Assertions.assertEquals(updatedCategory.getId(), initialCategory.getId());
+        Assertions.assertEquals(updatedCategory.getName(), expectedName);
+        Assertions.assertEquals(updatedCategory.getDescription(), expectedDescription);
+        Assertions.assertEquals(updatedCategory.isActive(), expectedIsActive);
+
+        Assertions.assertEquals(updatedCategory.getCreatedAt(), createdAt);
+        Assertions.assertTrue(updatedCategory.getUpdatedAt().isAfter(updatedAt));
+        Assertions.assertNull(updatedCategory.getDeletedAt());
+    }
+
+    /* O teste abaixo fará o teste utilizando o "ThrowsValidationHandler", ao invés do "NotificationHandler" ou
+     * seja, se um erro ocorrer, ele será lançado imediatamente ao invés de acumular. */
+    @Test
+    public void givenAValidCategory_whenCallUpdateToInactive_thenReturnCategoryUpdated(){
+
+        final var initialName = "Film";
+        final var initialDescription = "A description";
+        final var initialIsActive = true;
+
+        final var expectedName = "Filmes";
+        final var expectedDescription = "";
+        final var expectedIsActive = false;
+
+        final var initialCategory = Category.newCategory(initialName, initialDescription, initialIsActive);
+
+        Assertions.assertDoesNotThrow(() -> initialCategory.validate(new ThrowsValidationHandler()));
+
+        Assertions.assertTrue(initialCategory.isActive());
+        Assertions.assertNull(initialCategory.getDeletedAt());
+
+        /* O "createdAt" não deve ser modificado. */
+        final var createdAt = initialCategory.getCreatedAt();
+        /* Vamos mudar o comportamento de uma categoria, logo, o "updatedAt" deve ser modificado. */
+        final var updatedAt = initialCategory.getUpdatedAt();
+
+        final var updatedCategory = initialCategory.update(expectedName, expectedDescription, expectedIsActive);
+
+        Assertions.assertDoesNotThrow(() -> updatedCategory.validate(new ThrowsValidationHandler()));
+
+        Assertions.assertEquals(updatedCategory.getId(), initialCategory.getId());
+        Assertions.assertEquals(updatedCategory.getName(), expectedName);
+        Assertions.assertEquals(updatedCategory.getDescription(), expectedDescription);
+        Assertions.assertEquals(updatedCategory.isActive(), expectedIsActive);
+
+        Assertions.assertEquals(updatedCategory.getCreatedAt(), createdAt);
+        Assertions.assertTrue(updatedCategory.getUpdatedAt().isAfter(updatedAt));
+        Assertions.assertNotNull(updatedCategory.getDeletedAt());
+    }
+
+    /* O teste abaixo fará o teste utilizando o "ThrowsValidationHandler", ao invés do "NotificationHandler" ou
+     * seja, se um erro ocorrer, ele será lançado imediatamente ao invés de acumular. */
+
+    /* No teste abaixo, atualizaremos para uma informação inválida e garantiremos que tudo continuará bem. Isso
+    * ocorre pois não estamos chamando o "validate()" no método de "update()", então queremos garantir esse
+    * comportamento. Se alguém chamar o "validate()" dentro do "update()", o teste quebrará, indicando que esse comportamento
+    * não estava acontecendo anteriormente. */
+    @Test
+    public void givenAValidCategory_whenCallUpdateWithInvalidParams_thenReturnCategoryUpdated(){
+
+        final var initialName = "Film";
+        final var initialDescription = "A description";
+        final var initialIsActive = true;
+
+        final String expectedName = null;
+        final var expectedDescription = "";
+        final var expectedIsActive = true;
+
+        final var initialCategory = Category.newCategory(initialName, initialDescription, initialIsActive);
+
+        Assertions.assertDoesNotThrow(() -> initialCategory.validate(new ThrowsValidationHandler()));
+
+        /* O "createdAt" não deve ser modificado. */
+        final var createdAt = initialCategory.getCreatedAt();
+        /* Vamos mudar o comportamento de uma categoria, logo, o "updatedAt" deve ser modificado. */
+        final var updatedAt = initialCategory.getUpdatedAt();
+
+        final var updatedCategory = initialCategory.update(expectedName, expectedDescription, expectedIsActive);
+
+        Assertions.assertEquals(updatedCategory.getId(), initialCategory.getId());
+        Assertions.assertEquals(updatedCategory.getName(), expectedName);
+        Assertions.assertEquals(updatedCategory.getDescription(), expectedDescription);
+        Assertions.assertEquals(updatedCategory.isActive(), expectedIsActive);
+
+        Assertions.assertEquals(updatedCategory.getCreatedAt(), createdAt);
+        Assertions.assertTrue(updatedCategory.getUpdatedAt().isAfter(updatedAt));
+        Assertions.assertNull(updatedCategory.getDeletedAt());
+    }
 }
