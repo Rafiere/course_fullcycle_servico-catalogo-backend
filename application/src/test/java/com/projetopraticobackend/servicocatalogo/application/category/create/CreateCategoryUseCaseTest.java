@@ -3,7 +3,6 @@ package com.projetopraticobackend.servicocatalogo.application.category.create;
 /* Nessa classe, teremos alguns testes do caso de uso da criação de uma categoria. */
 
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryGateway;
-import com.projetopraticobackend.servicocatalogo.domain.exceptions.DomainException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +60,7 @@ public class CreateCategoryUseCaseTest {
         /* Na literatura, os casos de uso implementam o padrão "Command". A ação que o comando
          * executa está na semântica da classe, como "CreateCategoryCommand", e ele tem apenas um
          * único método público, com o nome de "execute()". */
-        final var actualOutput = useCase.execute(command);
+        final var actualOutput = useCase.execute(command).get();
 
         Assertions.assertNotNull(actualOutput);
         Assertions.assertNotNull(actualOutput.id());
@@ -109,9 +108,10 @@ public class CreateCategoryUseCaseTest {
         Mockito.when(categoryGatewayMock.create(Mockito.any()))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        final var actualException = Assertions.assertThrows(DomainException.class, () -> useCase.execute(command));
+        final var notification = useCase.execute(command).getLeft();
 
-        Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
+        Assertions.assertEquals(expectedErrorCount, notification.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, notification.firstError().message());
 
         /* Estamos nos garantindo que o método "create" do Gateway não foi chamado, com
         * qualquer parâmetro, pois a "DomainException" deve ocorrer antes.*/
@@ -150,7 +150,7 @@ public class CreateCategoryUseCaseTest {
         /* Na literatura, os casos de uso implementam o padrão "Command". A ação que o comando
          * executa está na semântica da classe, como "CreateCategoryCommand", e ele tem apenas um
          * único método público, com o nome de "execute()". */
-        final var actualOutput = useCase.execute(command);
+        final var actualOutput = useCase.execute(command).get(); //Como esse caso é um sucesso, estamos obtendo o "get()" do "Either".
 
         Assertions.assertNotNull(actualOutput);
         Assertions.assertNotNull(actualOutput.id());
@@ -187,6 +187,7 @@ public class CreateCategoryUseCaseTest {
         final var expectedIsActive = false;
 
         final var expectedErrorMessage = "Gateway error";
+        final var expectedErrorCount = 1;
 
         /* O "command" é um sufixo para darmos uma semântica para o objeto que tem os
          * atributos de criação de uma categoria. Poderia ser um "DTO", por exemplo. */
@@ -209,11 +210,10 @@ public class CreateCategoryUseCaseTest {
          * executa está na semântica da classe, como "CreateCategoryCommand", e ele tem apenas um
          * único método público, com o nome de "execute()". */
 
-        /* Estamos garantindo que a "IllegalStateException" seja lançada. */
+        final var notification = useCase.execute(command).getLeft();
 
-        final var actualException = Assertions.assertThrows(IllegalStateException.class, () -> useCase.execute(command));
-
-        Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
+        Assertions.assertEquals(expectedErrorCount, notification.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, notification.firstError().message());
 
         /* Estamos garantindo que, apesar da exception ter sido lançada, o método "create()" foi chamado, pois a
         * exception foi lançada apenas no gateway, e garantimos que o objeto que passamos para o Gateway está

@@ -3,6 +3,8 @@ package com.projetopraticobackend.servicocatalogo.application.category.create;
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryGateway;
 import com.projetopraticobackend.servicocatalogo.domain.validation.handler.Notification;
+import io.vavr.API;
+import io.vavr.control.Either;
 
 import java.util.Objects;
 
@@ -18,7 +20,7 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
     }
 
     @Override
-    public CreateCategoryOutput execute(final CreateCategoryCommand createCategoryCommand) {
+    public Either<Notification, CreateCategoryOutput> execute(final CreateCategoryCommand createCategoryCommand) {
 
         /* Abaixo, estamos fazendo o "destructuring" apenas por questões de
         * legibilidade, mas não precisamos fazer isso quando formos criar um código em
@@ -30,20 +32,24 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
 
         final var notification = Notification.create(); //Estamos criando um "Notification", que é o objeto que acumulará os erros, vazio.
 
+        //Estamos criando a categoria.
         final var category = Category.newCategory(name, description, isActive);
 
-        /* Vamos utilizar a implementação do "ThrowsValidationHandler", ou seja, o primeiro
-        * erro que acontecer será lançado como uma "exception", ao invés de ser acumulado. */
+        /* Vamos utilizar a implementação do "NotificationHandler", ou seja, o primeiro
+        * erro de validação que acontecer será acumulado ao invés de ser lançada uma exception. */
         category.validate(notification);
 
-        if(notification.hasError()){
-            /* O Either é um mônada que representa algo com sucesso e algo com erro. */
+        return notification.hasError() ? API.Left(notification) : create(category);
+    }
 
-            //Retornaremos o erro.
-        }
+    private Either<Notification, CreateCategoryOutput> create(Category category) {
 
-        final var createdCategory = this.categoryGateway.create(category);
+        //Abaixo, temos um "try" utilizando programação funcional.
 
-        return CreateCategoryOutput.from(createdCategory);
+        /* O Either é um mônada que representa algo com sucesso e algo com erro. É diferente do
+         * "Optional", que representa algo com valor e algo sem valor. */
+        return API.Try(() -> this.categoryGateway.create(category))
+                .toEither()
+                .bimap(Notification::create, CreateCategoryOutput::from); //Esse método aplica dois "maps" de uma única vez. O primeiro argumento é o "mapLeft()", ou seja, se ocorrer algum erro, e o segundo é o "mapRight()", caso a operação seja concluída com sucesso.
     }
 }
