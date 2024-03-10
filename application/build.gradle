@@ -12,6 +12,10 @@ repositories {
 dependencies {
     implementation(project(':domain')) //Estamos dizendo que a aplicação depende do domínio, assim, ela pode usar as classes do domínio.
 
+    /* O Vavr supre algo que é um déficit da linguagem, dessa forma, apesar de não ser recomendado inserirmos
+    * bibliotecas externas na camada de aplicação, nesses casos, podemos utilizar, se tivermos necessidade. */
+    implementation group: 'io.vavr', name: 'vavr', version: '0.10.4' //Add "Vavr" no projeto.
+
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.8.0'
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
