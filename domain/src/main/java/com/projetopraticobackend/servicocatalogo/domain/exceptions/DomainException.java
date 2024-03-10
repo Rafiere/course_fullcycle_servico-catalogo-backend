@@ -10,7 +10,7 @@ public class DomainException extends NoStacktraceException {
     private final List<Error> errors;
 
     public DomainException(final String message, final List<Error> errors){
-        super("");
+        super(message);
         this.errors = errors;
     }
 
