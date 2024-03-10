@@ -45,7 +45,7 @@ public class Notification implements ValidationHandler {
 
         try {
             validation.validate();
-        } catch (final DomainException ex){
+        } catch (final DomainException ex){ //Ele acumulará todos os erros que forem gerados.
             this.errors.addAll(ex.getErrors()); //O DomainException já possui erros dentro dele, por isso damos um tratamento especial para esse tipo de exception.
         } catch (final Throwable t){
             this.errors.add(new Error(t.getMessage()));
