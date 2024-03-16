@@ -36,14 +36,14 @@ public class UpdateCategoryUseCaseTest {
         final var expectedIsActive = true;
 
 
-        final var command = UpdateCategoryCommand.with(expectedId, expectedName, expectedDescription, expectedIsActive);
+        final var command = UpdateCategoryCommand.with(expectedId.getValue(), expectedName, expectedDescription, expectedIsActive);
 
         //Precisamos mockar o comportamento do teste.
 
         //Teremos duas chamadas para o gateway. O "find" para buscar a categoria e o "update" para atualizar a categoria na camada de persistência.
 
         //Quando chamarmos o "findById" chamando o "expectedId", retornaremos um "Optional" com a categoria que foi criada inicialmente.
-        Mockito.when(categoryGateway.findById(Mockito.eq(expectedId))).thenReturn(Optional.of(initialCategory));
+        Mockito.when(categoryGateway.findById(Mockito.eq(expectedId))).thenReturn(Optional.of(Category.clone(initialCategory))); //Estamos retornando um objeto com os mesmos atributos, mas com referências diferentes.
 
         //Esse método retornará o que for recebido como parâmetro do método.
         Mockito.when(categoryGateway.update(Mockito.any(Category.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
