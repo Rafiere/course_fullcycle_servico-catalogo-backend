@@ -5,6 +5,7 @@ import com.projetopraticobackend.servicocatalogo.domain.category.CategoryGateway
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
 import com.projetopraticobackend.servicocatalogo.domain.exceptions.DomainException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
@@ -24,6 +25,11 @@ public class UpdateCategoryUseCaseTest {
 
     @Mock
     private CategoryGateway categoryGateway;
+
+    @BeforeEach //Esse método será executado antes de cada teste.
+    void cleanUp(){
+        Mockito.reset(categoryGateway); //Estamos garantindo que o "categoryGateway" estará limpo antes de cada teste, assim, garantimos que nenhum comportamento está sendo passado, de forma indevida, de um teste para o outro.
+    }
 
     @Test
     public void givenAValidCommand_whenCallsUpdateCategory_shouldReturnCategoryId(){
