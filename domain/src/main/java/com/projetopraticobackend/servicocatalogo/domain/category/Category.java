@@ -5,7 +5,7 @@ import com.projetopraticobackend.servicocatalogo.domain.validation.ValidationHan
 
 import java.time.Instant;
 
-public class Category extends AgregateRoot<CategoryID> {
+public class Category extends AgregateRoot<CategoryID> implements Cloneable {
 
     private String name;
     private String description;
@@ -47,6 +47,10 @@ public class Category extends AgregateRoot<CategoryID> {
                 now,
                 now,
                 deletedAt);
+    }
+
+    public static Category clone(final Category category) {
+        return category.clone();
     }
 
     public Category activate(){
@@ -118,5 +122,23 @@ public class Category extends AgregateRoot<CategoryID> {
 
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    /* O "clone()" é um comportamento da JVM que pega os atributos de um objeto, cria um novo objeto e
+    * copia esses atributos para o novo objeto gerado, ou seja, criamos uma "cópia" do objeto, mas com referências
+    * diferentes. */
+    @Override
+    protected Category clone() {
+        try {
+
+            //Se tivermos um atributo mutável, como uma lista, por exemplo, precisamos copiá-lo também, para que a cópia não possa mudar o estado interno do original.
+            //Como, no objeto atual, não temos atributos mutáveis, não precisamos fazer nada.
+
+            Category clone = (Category) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
