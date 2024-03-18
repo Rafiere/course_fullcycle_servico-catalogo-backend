@@ -11,3 +11,9 @@ server:
     threads: # Aqui, temos a configuração das threads do servidor de aplicação.
       worker: 64 #As threads de "worker" são as threads que consomem a fila das requisições escutadas pelas threads de "IO" e processam as requisições. É recomendado termos, ao menos, 10 por CPU. Nesse caso, temos 64. O único problema é que thread é algo pesado. Uma "thread" pesa, normalmente, entre 2 a 3 megas. Então, se tivermos muitas threads, podemos ter um problema de memória.
       io: 4 #As threads de IO vão escutar as requisições e jogar para uma fila, para as threads de "worker" processarem. É recomendado que esse valor seja baixo. É recomendado que tenhamos uma thread por CPU.
+
+spring:
+  datasource:
+    url: jdbc:mysql://${mysql.url}/${mysql.schema}?useSSL=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=UTF-8
+    username: ${mysql.username}
+    password: ${mysql.password}

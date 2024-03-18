@@ -7,8 +7,8 @@ services:
     environment: # Essas são as variáveis de ambiente que estamos passando para o container.
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: adm_videos
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
     security_opt: # Essa é a configuração de segurança que estamos passando para o container.
       - seccomp:unconfined # Essa configuração é para que algumas configurações de segurança do MySQL sejam desativadas.
     ports: # Essa é a configuração de portas que estamos passando para o container.

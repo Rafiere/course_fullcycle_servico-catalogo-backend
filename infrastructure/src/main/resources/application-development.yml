@@ -1,2 +1,11 @@
 # Os profiles são uma forma de sobrescrevermos uma configuração de outro perfil.
 # Se subirmos o Spring com o perfil de "developer", estamos dizendo para o Spring que ele deve sobrescrever as configurações que estão no "application.yml" para as configurações desse arquivo.
+
+# Abaixo, temos a configuração do banco de dados para o ambiente de desenvolvimento. Sempre que utilizarmos esse
+# ambiente, o Spring irá sobrescrever as configurações do "application.yml" com as configurações desse arquivo.
+# Assim, o valor da propriedade "mysql.url" será "localhost:3306".
+mysql:
+  username: admin
+  password: admin
+  schema: adm_videos
+  url: localhost:3306
