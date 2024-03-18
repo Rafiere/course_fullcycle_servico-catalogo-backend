@@ -1,0 +1,2 @@
+# Os profiles são uma forma de sobrescrevermos uma configuração de outro perfil.
+# Se subirmos o Spring com o perfil de "developer", estamos dizendo para o Spring que ele deve sobrescrever as configurações que estão no "application.yml" para as configurações desse arquivo.
