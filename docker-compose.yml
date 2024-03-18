@@ -1,0 +1,21 @@
+version: '3.7' # Essa é a versão do "docker-compose" que estamos utilizando.
+
+services:
+  mysql:
+    container_name: adm_videos_mysql # Esse é o nome do container.
+    image: mysql:latest # Essa é a imagem que estamos utilizando.
+    environment: # Essas são as variáveis de ambiente que estamos passando para o container.
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: adm_videos
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    security_opt: # Essa é a configuração de segurança que estamos passando para o container.
+      - seccomp:unconfined # Essa configuração é para que algumas configurações de segurança do MySQL sejam desativadas.
+    ports: # Essa é a configuração de portas que estamos passando para o container.
+        - "3306:3306" # Estamos mapeando a porta 3306 do container para a porta 3306 do host.
+    networks: # Essa é a configuração de rede que estamos passando para o container.
+      - adm_videos_network
+
+networks: # Essa é a configuração de rede que estamos passando para o container.
+    adm_videos_network: # Esse é o nome da rede.
+        driver: bridge # Essa é a configuração do driver da rede. Esse driver serve para que os containers possam se comunicar entre si.
