@@ -1,0 +1,13 @@
+# Esse é o primeiro arquivo que o Spring lerá para buscar a configuração de qualquer biblioteca que tenhamos.
+
+server:
+  port: 8085 # Essa é a porta em que o servidor será executado.
+  compression: # Se passarmos de 1024 bytes e a resposta for no "content-type" abaixo, a resposta será comprimida no formato "gzip" e entregue mais rapidamente para o cliente. Essa performance é muito útil ao trafegarmos um "JSON" muito grande.
+    enabled: true # Habilita a compressão de resposta. Todas as respostas que estiverem no "content-type" abaixo e tiverem, no mínimo, 1024 bytes, serão comprimidas.
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024 #É o mínimo de "Content-Length" que é requerido para que a compressão seja feita.
+
+  undertow: #Esse é o servidor de aplicação.
+    threads: # Aqui, temos a configuração das threads do servidor de aplicação.
+      worker: 64 #As threads de "worker" são as threads que consomem a fila das requisições escutadas pelas threads de "IO" e processam as requisições. É recomendado termos, ao menos, 10 por CPU. Nesse caso, temos 64. O único problema é que thread é algo pesado. Uma "thread" pesa, normalmente, entre 2 a 3 megas. Então, se tivermos muitas threads, podemos ter um problema de memória.
+      io: 4 #As threads de IO vão escutar as requisições e jogar para uma fila, para as threads de "worker" processarem. É recomendado que esse valor seja baixo. É recomendado que tenhamos uma thread por CPU.
