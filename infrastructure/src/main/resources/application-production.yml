@@ -1,0 +1,16 @@
+mysql:
+  username: ${DATABASE_MYSQL_USERNAME:root}
+  password: ${DATABASE_MYSQL_PASSWORD:123456}
+  schema: ${DATABASE_MYSQL_SCHEMA:adm_videos}
+  url: ${DATABASE_MYSQL_URL:localhost:3306}
+
+# Não devemos colocar a senha do banco de dados diretamente no arquivo de configuração.
+# O ideal é que esses valores sejam utilizados como variáveis de ambiente.
+
+# Estamos sobrescrevendo o "ddl-auto" no arquivo de produção para que, se alguém modificar essa opção no "application.yml" sem saber, isso não afetará o ambiente de produção.
+# Além disso, no ambiente produtivo, não queremos fazer o "log" das queries.
+spring:
+  jpa: # O JPA é a especificação de persistência do Java.
+    show-sql: false # No ambiente de produção, isso ficará desabilitado. No ambiente de desenvolvimento, é muito útil para vermos o que está sendo executado no banco de dados.
+    hibernate:
+      ddl-auto: none # Essa feature define se o Hibernate deve criar e atualizar o banco de dados manualmente.

@@ -7,13 +7,29 @@ server:
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
     min-response-size: 1024 #É o mínimo de "Content-Length" que é requerido para que a compressão seja feita.
 
-  undertow: #Esse é o servidor de aplicação.
+  undertow: # Esse é o servidor de aplicação.
     threads: # Aqui, temos a configuração das threads do servidor de aplicação.
-      worker: 64 #As threads de "worker" são as threads que consomem a fila das requisições escutadas pelas threads de "IO" e processam as requisições. É recomendado termos, ao menos, 10 por CPU. Nesse caso, temos 64. O único problema é que thread é algo pesado. Uma "thread" pesa, normalmente, entre 2 a 3 megas. Então, se tivermos muitas threads, podemos ter um problema de memória.
-      io: 4 #As threads de IO vão escutar as requisições e jogar para uma fila, para as threads de "worker" processarem. É recomendado que esse valor seja baixo. É recomendado que tenhamos uma thread por CPU.
+      worker: 64 # As threads de "worker" são as threads que consomem a fila das requisições escutadas pelas threads de "IO" e processam as requisições. É recomendado termos, ao menos, 10 por CPU. Nesse caso, temos 64. O único problema é que thread é algo pesado. Uma "thread" pesa, normalmente, entre 2 a 3 megas. Então, se tivermos muitas threads, podemos ter um problema de memória.
+      io: 4 # As threads de IO vão escutar as requisições e jogar para uma fila, para as threads de "worker" processarem. É recomendado que esse valor seja baixo. É recomendado que tenhamos uma thread por CPU.
 
 spring:
   datasource:
     url: jdbc:mysql://${mysql.url}/${mysql.schema}?useSSL=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=UTF-8
     username: ${mysql.username}
     password: ${mysql.password}
+    hikari: # É o gerenciador de pool de conexões que estamos utilizando. Ele é o gerenciador mais eficiente e, a partir do Spring Boot 2.0, é o gerenciador de conexões padrão.
+      auto-commit: false # As conexões criadas pelo "Hikari" não terão "auto-commit". Gerenciaremos o "commit" e o "rollback" manualmente. Na verdade, quem fará esse gerenciamento será o Spring e o Hibernate, mas não o HikariCP.
+      connection-timeout: 250 # É uma configuração em milissegundos. É ideal mantermos esse número baixo para que estoure o timeout na aplicação. Quando temos uma thread que quer acessar o banco de dados, esse é o tempo que esperaremos até que o "pool" de conexões nos dê uma conexão. Se estamos em um ambiente muito concorrido, com várias requisições em paralelo, não podemos esperar muito tempo. Se esperarmos muito, teremos um problema de concorrência. Quando trabalhamos com microsserviço, é muito recomendado falharmos o mais rápido possível.
+      max-lifetime: 600000 # É o tempo máximo que uma conexão pode ficar aberta. Nesse caso, estamos definindo dez minutos. Esse valor é por questões de segurança. Se, eventualmente, o servidor mudar a senha, precisamos modificar as conexões que estão abertas. Com essa configuração, a cada 10 minutos, o pool de conexões dropará todas as conexões e abrirá novas.
+      maximum-pool-size: 20 # É a quantidade máxima de conexões com o banco de dados que manteremos. O ideal é manter esse valor baixo. Quanto mais alto esse valor, mais difícil será para o banco de dados gerenciar essas conexões. Se colocarmos muitas conexões, provavelmente não teremos um "throughput" alto para conseguirmos utilizar todas essas conexões.
+      minimum-idle: 5 # É a quantidade mínima de conexões que manteremos abertas. O ideal é mantermos esse valor baixo. Se tivermos muitas conexões abertas, teremos um problema de memória. Conforme vão chegando novas requisições, o pool criará até o máximo de 20 conexões, definidas pela propriedade acima.
+      pool-name: master # É o nome do "pool". É mais para a configuração das métricas que utilizaremos.
+  jpa: # O JPA é a especificação de persistência do Java.
+    open-in-view: false # Essa configuração abre o escopo transacional do banco de dados desde o controller. Desativamos essa ocnfiguração porque, às vezes, abrirmos uma transação desde o controller é algo muito custoso em um servidor de outra performance. Por causa disso, por padrão, desabilitamos essas configurações.
+    show-sql: true # No ambiente de produção, isso ficará desabilitado. No ambiente de desenvolvimento, é muito útil para vermos o que está sendo executado no banco de dados.
+    hibernate:
+      ddl-auto: none # Essa feature define se o Hibernate deve criar e atualizar o banco de dados manualmente.
+    properties:
+      "[hibernate.dialect]": org.hibernate.dialect.MySQL5InnoDBDialect # Essa propriedade define o dialeto do Hibernate.
+      "[hibernate.generate_statistics]": true # Essa propriedade é boa para realizar troubleshooting, mas ela deixa o log bem poluído.
+      "[hibernate.connection.provider_disables_autocommit]": true # Isso informa que o "auto-commit" foi desabilitado na configuração do Hikari. Quando definimos essa propriedade, informamos o Hibernate que estamos habilitando ou desabilitando o "auto-commit" do Hikari. Com isso, o Hibernate não precisa, para cada transação, obter uma conexão do "pool", para saber se a conexão foi ou não criada com o "auto-commit: false". Para um ambiente de alta performance, isso é muito importante. Existe uma postagem do Vlad Mihalcea que explica isso.
