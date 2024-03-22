@@ -53,6 +53,24 @@ public class Category extends AgregateRoot<CategoryID> implements Cloneable {
         return category.clone();
     }
 
+    public static Category with(final CategoryID id,
+                                final String name,
+                                final String description,
+                                final boolean active,
+                                final Instant createdAt,
+                                final Instant updatedAt,
+                                final Instant deletedAt) {
+
+        return Category.with(
+                id,
+                name,
+                description,
+                active,
+                createdAt,
+                updatedAt,
+                deletedAt);
+    }
+
     public Category activate(){
         if(getDeletedAt() != null){
             this.deletedAt = null;
