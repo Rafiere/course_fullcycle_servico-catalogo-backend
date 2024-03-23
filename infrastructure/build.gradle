@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.flywaydb:flyway-mysql:8.5.10' //Durante todos os scripts de build, o Gradle irá baixar a dependência do Flyway.
+        classpath 'org.flywaydb:flyway-mysql:8.5.13' //Durante todos os scripts de build, o Gradle irá baixar a dependência do Flyway.
     }
 }
 
@@ -12,7 +12,7 @@ plugins {
     id 'application' //Esse plugin permite que executemos esse módulo como um aplicativo Java.
     id 'org.springframework.boot' version '2.6.7'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE' //Esse plugin permite que o Spring gerencie as dependências, para que não tenhamos que lidar com elas manualmente.
-    id 'org.flywaydb.flyway' version '8.5.10' //Estamos adicionando o "plugin" do Flyway. É esse plugin que adicionará algumas novas "tasks" ao Gradle.
+    id 'org.flywaydb.flyway' version '8.5.13' //Estamos adicionando o "plugin" do Flyway. É esse plugin que adicionará algumas novas "tasks" ao Gradle.
 }
 
 group = 'com.projetopraticobackend.servicocatalogo.infrastructure'
@@ -46,8 +46,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-undertow') //Estamos adicionando o "Undertow" ao projeto.
     implementation('org.springframework.boot:spring-boot-starter-data-jpa') //Estamos adicionando o "Spring Data JPA" ao projeto.
 
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation('org.flywaydb:flyway-core') //Estamos adicionando as migrations do Flyway nos testes. Assim, as migrações serão executadas para os testes.
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     testRuntimeOnly('com.h2database:h2')
 }
