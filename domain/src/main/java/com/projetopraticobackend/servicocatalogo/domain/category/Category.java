@@ -4,30 +4,31 @@ import com.projetopraticobackend.servicocatalogo.domain.AgregateRoot;
 import com.projetopraticobackend.servicocatalogo.domain.validation.ValidationHandler;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class Category extends AgregateRoot<CategoryID> implements Cloneable {
 
     private String name;
     private String description;
     private boolean active;
-    private Instant createdAt; //A semântica do "Instant" é um marco no tempo, logo, ele calcula o tempo desde o início e conta os segundos até aqui. Ele é melhor do que o LocalDateTime pois ele é mais preciso e não depende do fuso horário, pois é sempre UTC.
+    private final Instant createdAt; //A semântica do "Instant" é um marco no tempo, logo, ele calcula o tempo desde o início e conta os segundos até aqui. Ele é melhor do que o LocalDateTime pois ele é mais preciso e não depende do fuso horário, pois é sempre UTC.
     private Instant updatedAt;
     private Instant deletedAt;
 
     private Category(final CategoryID id,
-                    final String name,
-                    final String description,
-                    final boolean active,
-                    final Instant createdAt,
-                    final Instant updatedAt,
-                    final Instant deletedAt) {
+                     final String name,
+                     final String description,
+                     final boolean active,
+                     final Instant createdAt,
+                     final Instant updatedAt,
+                     final Instant deletedAt) {
 
         super(id);
         this.name = name;
         this.description = description;
         this.active = active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = Objects.requireNonNull(createdAt, "'createdAt' should not be null");
+        this.updatedAt = Objects.requireNonNull(updatedAt, "'updatedAt' should not be null");
         this.deletedAt = deletedAt;
     }
 
@@ -61,7 +62,7 @@ public class Category extends AgregateRoot<CategoryID> implements Cloneable {
                                 final Instant updatedAt,
                                 final Instant deletedAt) {
 
-        return Category.with(
+        return new Category(
                 id,
                 name,
                 description,
@@ -71,8 +72,20 @@ public class Category extends AgregateRoot<CategoryID> implements Cloneable {
                 deletedAt);
     }
 
-    public Category activate(){
-        if(getDeletedAt() != null){
+    public static Category with(final Category category) {
+
+        return new Category(
+                category.getId(),
+                category.getName(),
+                category.getDescription(),
+                category.isActive(),
+                category.getCreatedAt(),
+                category.getUpdatedAt(),
+                category.getDeletedAt());
+    }
+
+    public Category activate() {
+        if (getDeletedAt() != null) {
             this.deletedAt = null;
         }
 
@@ -82,8 +95,8 @@ public class Category extends AgregateRoot<CategoryID> implements Cloneable {
         return this;
     }
 
-    public Category deactivate(){
-        if(getDeletedAt() == null){ //Se estamos desativando uma categoria que já está desativada, não mudaremos a data de desativação.
+    public Category deactivate() {
+        if (getDeletedAt() == null) { //Se estamos desativando uma categoria que já está desativada, não mudaremos a data de desativação.
             this.deletedAt = Instant.now();
         }
 
@@ -95,7 +108,7 @@ public class Category extends AgregateRoot<CategoryID> implements Cloneable {
 
     public Category update(final String name,
                            final String description,
-                           final boolean isActive){
+                           final boolean isActive) {
 
         this.name = name;
         this.description = description;
@@ -112,7 +125,7 @@ public class Category extends AgregateRoot<CategoryID> implements Cloneable {
     }
 
     /* Utilizaremos um validador externo, que é uma classe apenas para implementar
-    * a validação da "Category". */
+     * a validação da "Category". */
     @Override
     public void validate(final ValidationHandler handler) {
         new CategoryValidator(this, handler).validate();
@@ -143,8 +156,8 @@ public class Category extends AgregateRoot<CategoryID> implements Cloneable {
     }
 
     /* O "clone()" é um comportamento da JVM que pega os atributos de um objeto, cria um novo objeto e
-    * copia esses atributos para o novo objeto gerado, ou seja, criamos uma "cópia" do objeto, mas com referências
-    * diferentes. */
+     * copia esses atributos para o novo objeto gerado, ou seja, criamos uma "cópia" do objeto, mas com referências
+     * diferentes. */
     @Override
     protected Category clone() {
         try {
