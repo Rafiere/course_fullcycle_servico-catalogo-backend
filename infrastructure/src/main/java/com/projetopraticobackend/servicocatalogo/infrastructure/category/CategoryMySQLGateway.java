@@ -28,12 +28,8 @@ public class CategoryMySQLGateway implements CategoryGateway {
     //Criaremos testes para cada um dos métodos abaixo.
 
     @Override
-    public Category create(Category category) {
-        final CategoryJpaEntity categoryJpaEntity = CategoryJpaEntity.from(category);
-
-        final CategoryJpaEntity savedCategoryJpaEntity = categoryRepository.save(categoryJpaEntity);
-
-        return CategoryJpaEntity.toAggregate(savedCategoryJpaEntity);
+    public Category create(final Category category) {
+        return save(category);
     }
 
     @Override
@@ -48,11 +44,21 @@ public class CategoryMySQLGateway implements CategoryGateway {
 
     @Override
     public Category update(final Category category) {
-        return null;
+        return save(category);
     }
 
     @Override
     public Pagination<Category> findAll(final CategorySearchQuery query) {
         return null;
+    }
+
+    //Como tanto o método "create" quanto o "update" fazem a mesma coisa, criamos um método privado para evitar a repetição de código.
+    //Esse método interno faz a conversão de um agregado para uma entidade JPA e salva essa entidade no banco de dados.
+    private Category save(final Category category) {
+        final CategoryJpaEntity categoryJpaEntity = CategoryJpaEntity.from(category);
+
+        final CategoryJpaEntity savedCategoryJpaEntity = categoryRepository.save(categoryJpaEntity);
+
+        return CategoryJpaEntity.toAggregate(savedCategoryJpaEntity);
     }
 }

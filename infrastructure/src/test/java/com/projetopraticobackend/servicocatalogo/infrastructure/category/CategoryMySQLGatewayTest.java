@@ -2,6 +2,7 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.category;
 
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.infrastructure.MySQLGatewayTest;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -81,6 +82,71 @@ class CategoryMySQLGatewayTest {
         Assertions.assertEquals(category.getUpdatedAt(), categoryFromRepository.getUpdatedAt());
         Assertions.assertEquals(category.getDeletedAt(), categoryFromRepository.getDeletedAt());
 
-        Assertions.assertNull(returnedFromGatewayCategory.getDeletedAt());
+        Assertions.assertNull(categoryFromRepository.getDeletedAt());
+    }
+
+    @Test
+    public void givenAValidCategory_whenCallsUpdate_shouldReturnCategoryUpdated(){
+
+        //Esses são os valores que a categoria, após a atualização, deve ter.
+        final var expectedName = "Filmes";
+        final var expectedDescription = "Filmes de todos os gêneros.";
+        final var expectedIsActive = true;
+
+        //A categoria abaixo está errada e será atualizada.
+        final var invalidCategory = Category.newCategory("Film", null, true);
+
+        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não temos nada no banco de dados.
+
+        //Estamos persistindo a categoria com os valores inválidos.
+        categoryRepository.saveAndFlush(CategoryJpaEntity.from(invalidCategory));
+
+        //Estamos garantindo que a categoria foi persistida.
+        Assertions.assertEquals(1, categoryRepository.count());
+
+        //Estamos garantindo que a categoria, que foi criada com os valores inválidos, foi persistida com os valores inválidos.
+        final var invalidCategoryFromRepository = categoryRepository.findById(invalidCategory.getId().getValue()).get();
+        Assertions.assertEquals("Film", invalidCategoryFromRepository.getName());
+        Assertions.assertEquals(null, invalidCategoryFromRepository.getDescription());
+        Assertions.assertEquals(true, invalidCategoryFromRepository.isActive());
+
+        //Estamos criando uma nova instância com os valores que são esperados.
+        final var updatedCategory =
+                invalidCategory.clone().update(expectedName, expectedDescription, expectedIsActive);
+
+        //Estamos atualizando a categoria.
+        final var savedUpdatedCategory = categoryMySQLGateway.update(updatedCategory);
+
+        //Estamos nos certificando que, após a atualização, ainda temos apenas uma categoria no banco de dados.
+        Assertions.assertEquals(1, categoryRepository.count());
+
+        //Abaixo, temos as asserções para verificar o que foi retornado do gateway.
+
+        Assertions.assertEquals(invalidCategory.getId(), savedUpdatedCategory.getId());
+        Assertions.assertEquals(expectedName, savedUpdatedCategory.getName());
+        Assertions.assertEquals(expectedDescription, savedUpdatedCategory.getDescription());
+        Assertions.assertEquals(expectedIsActive, savedUpdatedCategory.isActive());
+
+        Assertions.assertEquals(invalidCategory.getCreatedAt(), savedUpdatedCategory.getCreatedAt());
+        Assertions.assertTrue(invalidCategory.getUpdatedAt().isBefore(savedUpdatedCategory.getUpdatedAt()));
+        Assertions.assertEquals(invalidCategory.getDeletedAt(), savedUpdatedCategory.getDeletedAt());
+
+        Assertions.assertNull(savedUpdatedCategory.getDeletedAt());
+
+        //Abaixo, temos as asserções para a categoria que foi, de fato, persistida no repositório, sem utilizarmos
+        //o retorno do gateway.
+
+        final var categoryFromRepository = categoryRepository.findById(invalidCategory.getId().getValue()).get();
+
+        Assertions.assertEquals(invalidCategory.getId().getValue(), categoryFromRepository.getId());
+        Assertions.assertEquals(expectedName, categoryFromRepository.getName());
+        Assertions.assertEquals(expectedDescription, categoryFromRepository.getDescription());
+        Assertions.assertEquals(expectedIsActive, categoryFromRepository.isActive());
+
+        Assertions.assertEquals(invalidCategory.getCreatedAt(), categoryFromRepository.getCreatedAt());
+        Assertions.assertTrue(invalidCategory.getUpdatedAt().isBefore(categoryFromRepository.getUpdatedAt()));
+        Assertions.assertEquals(invalidCategory.getDeletedAt(), categoryFromRepository.getDeletedAt());
+
+        Assertions.assertNull(categoryFromRepository.getDeletedAt());
     }
 }
