@@ -1,6 +1,7 @@
 package com.projetopraticobackend.servicocatalogo.infrastructure.category;
 
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
+import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
 import com.projetopraticobackend.servicocatalogo.infrastructure.MySQLGatewayTest;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryRepository;
@@ -49,7 +50,8 @@ class CategoryMySQLGatewayTest {
 
         final var category = Category.newCategory(expectedName, expectedDescription, expectedActive);
 
-        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não temos nada no banco de dados.
+        //Estamos garantindo que não temos nada no banco de dados.
+        Assertions.assertEquals(0, categoryRepository.count());
 
         final var returnedFromGatewayCategory = categoryMySQLGateway.create(category);
 
@@ -96,7 +98,8 @@ class CategoryMySQLGatewayTest {
         //A categoria abaixo está errada e será atualizada.
         final var invalidCategory = Category.newCategory("Film", null, true);
 
-        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não temos nada no banco de dados.
+        //Estamos garantindo que não temos nada no banco de dados.
+        Assertions.assertEquals(0, categoryRepository.count());
 
         //Estamos persistindo a categoria com os valores inválidos.
         categoryRepository.saveAndFlush(CategoryJpaEntity.from(invalidCategory));
@@ -148,5 +151,38 @@ class CategoryMySQLGatewayTest {
         Assertions.assertEquals(invalidCategory.getDeletedAt(), categoryFromRepository.getDeletedAt());
 
         Assertions.assertNull(categoryFromRepository.getDeletedAt());
+    }
+
+    @Test
+    public void givenAPrePersistedCategoryAndValidCategoryId_whenTryToDeleteIt_shouldDeleteCategory(){
+
+        final var category = Category.newCategory("Filmes", null, true);
+
+        //Estamos garantindo que não temos nada no banco de dados.
+        Assertions.assertEquals(0, categoryRepository.count());
+
+        //Estamos persistindo a categoria que será deletada no banco de dados..
+        categoryRepository.saveAndFlush(CategoryJpaEntity.from(category));
+
+        //Estamos garantindo que a categoria foi persistida.
+        Assertions.assertEquals(1, categoryRepository.count());
+
+        categoryMySQLGateway.deleteById(category.getId());
+
+        //Estamos garantindo que a categoria foi deletada corretamente do banco de dados.
+        Assertions.assertEquals(0, categoryRepository.count());
+    }
+
+    @Test
+    public void givenAnInvalidCategoryId_whenTryToDeleteIt_shouldDeleteCategory(){
+
+        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não temos nada no banco de dados.
+
+        categoryMySQLGateway.deleteById(CategoryID.from("123"));
+
+        //Estamos garantindo que nenhuma categoria foi deletada, pois não existe nenhuma categoria como essa no banco de dados.
+        //De acordo com a nossa implementação, se o ID não existir, não retornaremos um erro, por isso não verificaremos a
+        //exception.
+        Assertions.assertEquals(0, categoryRepository.count());
     }
 }

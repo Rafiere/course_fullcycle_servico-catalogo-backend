@@ -35,6 +35,10 @@ public class CategoryMySQLGateway implements CategoryGateway {
     @Override
     public void deleteById(final CategoryID id) {
 
+        //O professor utilizou o "exists" antes para não lidar com exceptions.
+        if(categoryRepository.existsById(id.getValue())){
+            categoryRepository.deleteById(id.getValue());
+        }
     }
 
     @Override
