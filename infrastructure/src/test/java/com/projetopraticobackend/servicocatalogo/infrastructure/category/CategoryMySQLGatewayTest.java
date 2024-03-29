@@ -185,4 +185,53 @@ class CategoryMySQLGatewayTest {
         //exception.
         Assertions.assertEquals(0, categoryRepository.count());
     }
+
+    @Test
+    public void givenAValidPrePersistedCategoryAndValidCategoryId_whenCallsFindById_shouldReturnCategory(){
+
+        //Esses são os valores que a categoria, após a atualização, deve ter.
+        final var expectedName = "Filmes";
+        final var expectedDescription = "Filmes de todos os gêneros.";
+        final var expectedIsActive = true;
+
+        //A categoria abaixo será salva no banco de dados
+        final var validCategory = Category.newCategory("Filmes", "Filmes de todos os gêneros.", true);
+
+        //Estamos garantindo que não temos nada no banco de dados.
+        Assertions.assertEquals(0, categoryRepository.count());
+
+        //Estamos persistindo a categoria com os valores válidos.
+        categoryRepository.saveAndFlush(CategoryJpaEntity.from(validCategory));
+
+        //Estamos garantindo que a categoria foi persistida.
+        Assertions.assertEquals(1, categoryRepository.count());
+
+        //Estamos garantindo que a categoria, que foi criada com os valores válidos, foi persistida com os valores válidos.
+        final var savedCategory = categoryMySQLGateway.findById(validCategory.getId()).get();
+
+        Assertions.assertEquals(validCategory.getId(), savedCategory.getId());
+        Assertions.assertEquals(expectedName, savedCategory.getName());
+        Assertions.assertEquals(expectedDescription, savedCategory.getDescription());
+        Assertions.assertEquals(expectedIsActive, savedCategory.isActive());
+
+        Assertions.assertEquals(validCategory.getCreatedAt(), savedCategory.getCreatedAt());
+        Assertions.assertEquals(validCategory.getUpdatedAt(), savedCategory.getUpdatedAt());
+        Assertions.assertNull(savedCategory.getDeletedAt());
+
+        //Estamos nos certificando que apenas uma categoria foi buscada.
+        Assertions.assertEquals(1, categoryRepository.count());
+    }
+
+    @Test
+    public void givenAValidCategoryIdNotStored_whenCallsFindById_shouldReturnEmpty(){
+
+        //Estamos garantindo que não temos nada no banco de dados.
+        Assertions.assertEquals(0, categoryRepository.count());
+
+        //Estamos garantindo que a categoria, que foi criada com os valores válidos, foi persistida com os valores válidos.
+        final var category = categoryMySQLGateway.findById(CategoryID.from("123"));
+
+        //Estamos garantindo que a categoria não foi encontrada.
+        Assertions.assertTrue(category.isEmpty());
+    }
 }
