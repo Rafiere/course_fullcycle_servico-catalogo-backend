@@ -1,4 +1,4 @@
-package com.projetopraticobackend.servicocatalogo.infrastructure;
+package com.projetopraticobackend.servicocatalogo;
 
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,27 +23,8 @@ import java.util.Collection;
 })
 //@SpringBootTest //Essa anotação faz com que o Spring Boot suba o contexto da aplicação antes de rodar os testes. Esse contexto é recomendado apenas para testes end-to-end. Por isso, não utilizaremos essa anotação.
 @DataJpaTest //Essa anotação faz com que o Spring Boot suba o contexto do JPA antes de rodar os testes. Esse contexto é recomendado para testes de integração. Por isso, utilizaremos essa anotação.
-@ExtendWith(MySQLGatewayTest.CleanUpExtensions.class) //Estamos dizendo para o JUnit que queremos que a extensão "CleanUpExtensions" seja executada antes de cada teste.
+@ExtendWith(CleanUpExtension.class) //Estamos dizendo para o JUnit que queremos que a extensão "CleanUpExtensions" seja executada antes de cada teste.
 public @interface MySQLGatewayTest {
-
-    //Essa extensão personalizada serve para limpar o banco de dados antes de cada teste, pegando todos
-    //os beans que são do tipo "Repository" e executando o método "deleteAll" deles.
-    class CleanUpExtensions implements BeforeEachCallback {
-
-        @Override
-        public void beforeEach(final ExtensionContext context) {
-            final var repositories = SpringExtension.getApplicationContext(context)
-                    .getBeansOfType(CrudRepository.class)
-                    .values(); //Estamos pegando todos os beans do tipo "Repository"
-
-            cleanUp(repositories);
-        }
-
-        private void cleanUp(final Collection<CrudRepository> repositories){
-
-            repositories.forEach(CrudRepository::deleteAll); //Vamos executar o método "deleteAll" para todos os repositórios que forem encontrados.
-        }
-    }
 }
 
 
