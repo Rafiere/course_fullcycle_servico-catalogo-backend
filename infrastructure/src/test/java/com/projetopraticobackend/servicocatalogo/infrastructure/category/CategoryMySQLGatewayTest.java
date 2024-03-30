@@ -2,12 +2,16 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.category;
 
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
+import com.projetopraticobackend.servicocatalogo.domain.category.CategorySearchQuery;
 import com.projetopraticobackend.servicocatalogo.infrastructure.MySQLGatewayTest;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,10 +34,10 @@ class CategoryMySQLGatewayTest {
 
 // Sempre queremos deletar todas as informações que foram manipuladas pelo teste anterior ao utilizarmos um teste integrado.
 // Para isso, podemos utilizar o método abaixo ou criarmos uma "extension".
-//    @BeforeEach
-//    void cleanUp(){
-//        categoryRepository.deleteAll();
-//    }
+    @BeforeEach
+    void cleanUp(){
+        categoryRepository.deleteAll();
+    }
 
     /* Esse teste garantirá que as dependências foram injetadas corretamente. */
     @Test
@@ -233,5 +237,204 @@ class CategoryMySQLGatewayTest {
 
         //Estamos garantindo que a categoria não foi encontrada.
         Assertions.assertTrue(category.isEmpty());
+    }
+
+    @Test
+    public void givenPrePersistedCategories_whenCallsFindAll_shouldReturnPaginated(){
+
+        final var expectedPage = 0; //É a página que queremos buscar.
+        final var expectedPerPage = 1; //Queremos um resultado por página.
+        final var expectedTotal = 3; //Criaremos três categories pré-persistidas.
+
+        final var filmes = Category.newCategory("Filmes", null, true);
+        final var series = Category.newCategory("Séries", null, true);
+        final var documentarios = Category.newCategory("Documentários", null, true);
+
+        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não existe nada persistido previamente.
+
+        categoryRepository.saveAll(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        Assertions.assertEquals(3, categoryRepository.count()); //Estamos garantindo que as três categorias foram persistidas.
+
+        final var query = new CategorySearchQuery(0, 1, "", "name", "asc"); //Buscaremos as categorias com esses parâmetros.
+
+        final var categories = categoryMySQLGateway.findAll(query); //Estamos buscando a categoria.
+
+        //Estamos realizando as asserções para garantir que a paginação está funcionando corretamente.
+        Assertions.assertEquals(expectedPage, categories.currentPage());
+        Assertions.assertEquals(expectedPerPage, categories.perPage());
+        Assertions.assertEquals(expectedTotal, categories.totalElements());
+        Assertions.assertEquals(expectedPerPage, categories.elements().size());
+
+        //Como os parâmetros de busca estão com a ordenação por nome em ordem crescente, a primeira categoria deve ser "Documentários".
+        Assertions.assertEquals(documentarios.getId(), categories.elements().get(0).getId());
+    }
+
+    @Test
+    public void givenEmptyCategoriesTable_whenCallsFindAll_shouldReturnEmptyPage(){
+
+        //Nesse teste, a paginação não trará nenhum resultado.
+
+        final var expectedPage = 0; //É a página que queremos buscar.
+        final var expectedPerPage = 1; //Queremos um resultado por página.
+        final var expectedTotal = 0; //Criaremos três categories pré-persistidas.
+
+        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não existe nada persistido previamente.
+
+        final var query = new CategorySearchQuery(0, 1, "", "name", "asc"); //Buscaremos as categorias com esses parâmetros.
+
+        final var categories = categoryMySQLGateway.findAll(query); //Estamos buscando a categoria.
+
+        //Estamos realizando as asserções para garantir que a paginação está funcionando corretamente.
+        Assertions.assertEquals(expectedPage, categories.currentPage());
+        Assertions.assertEquals(expectedPerPage, categories.perPage());
+        Assertions.assertEquals(expectedTotal, categories.totalElements());
+        Assertions.assertEquals(0, categories.elements().size());
+    }
+
+    @Test
+    public void givenFollowPagination_whenCallsFindAllWithPage1_shouldReturnPaginated(){
+
+        //O teste abaixo fará o seguimento da paginação.
+
+        var expectedPage = 0; //É a página que queremos buscar.
+        final var expectedPerPage = 1; //Queremos um resultado por página.
+        final var expectedTotal = 3; //Criaremos três categories pré-persistidas.
+
+        final var filmes = Category.newCategory("Filmes", null, true);
+        final var series = Category.newCategory("Séries", null, true);
+        final var documentarios = Category.newCategory("Documentários", null, true);
+
+        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não existe nada persistido previamente.
+
+        categoryRepository.saveAll(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        Assertions.assertEquals(3, categoryRepository.count()); //Estamos garantindo que as três categorias foram persistidas.
+
+        var query = new CategorySearchQuery(0, 1, "", "name", "asc"); //Buscaremos as categorias com esses parâmetros.
+
+        var categories = categoryMySQLGateway.findAll(query); //Estamos buscando as categorias.
+
+        //Asserções da realização da primeira paginação. - Deve retornar a categoria "Documentários".
+
+        //Estamos realizando as asserções para garantir que a paginação está funcionando corretamente.
+        Assertions.assertEquals(expectedPage, categories.currentPage());
+        Assertions.assertEquals(expectedPerPage, categories.perPage());
+        Assertions.assertEquals(expectedTotal, categories.totalElements());
+        Assertions.assertEquals(expectedPerPage, categories.elements().size());
+
+        //Como os parâmetros de busca estão com a ordenação por nome em ordem crescente, a primeira categoria deve ser "Documentários".
+        Assertions.assertEquals(documentarios.getId(), categories.elements().get(0).getId());
+
+        //Testes da página 01 - Deve retornar a categoria "Filmes".
+
+        expectedPage = 1;
+        query = new CategorySearchQuery(1, 1, "", "name", "asc"); //Buscaremos as categorias com esses parâmetros.
+        categories = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, categories.currentPage());
+        Assertions.assertEquals(expectedPerPage, categories.perPage());
+        Assertions.assertEquals(expectedTotal, categories.totalElements());
+        Assertions.assertEquals(expectedPerPage, categories.elements().size());
+
+        Assertions.assertEquals(filmes.getId(), categories.elements().get(0).getId());
+
+        //Testes da página 02 - Deve buscar a categoria "Séries".
+
+        expectedPage = 2;
+        query = new CategorySearchQuery(2, 1, "", "name", "asc"); //Buscaremos as categorias com esses parâmetros.
+        categories = categoryMySQLGateway.findAll(query);
+
+        Assertions.assertEquals(expectedPage, categories.currentPage());
+        Assertions.assertEquals(expectedPerPage, categories.perPage());
+        Assertions.assertEquals(expectedTotal, categories.totalElements());
+        Assertions.assertEquals(expectedPerPage, categories.elements().size());
+
+        Assertions.assertEquals(series.getId(), categories.elements().get(0).getId());
+    }
+
+    @Test
+    public void givenPrePersistedCategoriesAndDocAsTerms_whenCallsFindAllAndTermsMatchesCategoryName_shouldReturnPaginated(){
+
+        //Abaixo, testaremos o uso dos termos na paginação no nome da categoria.
+
+        final var expectedPage = 0; //É a página que queremos buscar.
+        final var expectedPerPage = 1; //Queremos um resultado por página.
+        final var expectedTotal = 1; //Criaremos três categories pré-persistidas.
+
+        final var filmes = Category.newCategory("Filmes", null, true);
+        final var series = Category.newCategory("Séries", null, true);
+        final var documentarios = Category.newCategory("Documentários", null, true);
+
+        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não existe nada persistido previamente.
+
+        categoryRepository.saveAll(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        Assertions.assertEquals(3, categoryRepository.count()); //Estamos garantindo que as três categorias foram persistidas.
+
+        var query = new CategorySearchQuery(0, 1, "doc", "name", "asc"); //Buscaremos as categorias com esses parâmetros.
+
+        var categories = categoryMySQLGateway.findAll(query); //Estamos buscando as categorias.
+
+        //Asserções da realização da primeira paginação. - Deve retornar a categoria "Documentários".
+
+        //Estamos realizando as asserções para garantir que a paginação está funcionando corretamente.
+        Assertions.assertEquals(expectedPage, categories.currentPage());
+        Assertions.assertEquals(expectedPerPage, categories.perPage());
+        Assertions.assertEquals(expectedTotal, categories.totalElements());
+        Assertions.assertEquals(expectedPerPage, categories.elements().size());
+
+        //Como os parâmetros de busca estão com a ordenação por nome em ordem crescente, a primeira categoria deve ser "Documentários".
+        Assertions.assertEquals(documentarios.getId(), categories.elements().get(0).getId());
+    }
+
+    @Test
+    public void givenPrePersistedCategoriesAndMaisAssistidaAsTerms_whenCallsFindAllAndTermsMatchesCategoryDescription_shouldReturnPaginated(){
+
+        //Abaixo, testaremos o uso dos termos na paginação no nome da categoria.
+
+        final var expectedPage = 0; //É a página que queremos buscar.
+        final var expectedPerPage = 1; //Queremos um resultado por página.
+        final var expectedTotal = 1; //Criaremos três categories pré-persistidas.
+
+        final var filmes = Category.newCategory("Filmes", "A categoria mais assistida", true);
+        final var series = Category.newCategory("Séries", "Uma categoria assistida", true);
+        final var documentarios = Category.newCategory("Documentários", "A categoria menos assistida", true);
+
+        Assertions.assertEquals(0, categoryRepository.count()); //Estamos garantindo que não existe nada persistido previamente.
+
+        categoryRepository.saveAll(List.of(
+                CategoryJpaEntity.from(filmes),
+                CategoryJpaEntity.from(series),
+                CategoryJpaEntity.from(documentarios)
+        ));
+
+        Assertions.assertEquals(3, categoryRepository.count()); //Estamos garantindo que as três categorias foram persistidas.
+
+        //Abaixo, estamos buscando as categorias com a descrição "Mais assistida". Deverá retornar apenas a categoria "Filmes".
+        var query = new CategorySearchQuery(0, 1, "Mais assistida", "name", "asc"); //Buscaremos as categorias com esses parâmetros.
+
+        var categories = categoryMySQLGateway.findAll(query); //Estamos buscando as categorias.
+
+        //Estamos realizando as asserções para garantir que a paginação está funcionando corretamente.
+        Assertions.assertEquals(expectedPage, categories.currentPage());
+        Assertions.assertEquals(expectedPerPage, categories.perPage());
+        Assertions.assertEquals(expectedTotal, categories.totalElements());
+        Assertions.assertEquals(expectedPerPage, categories.elements().size());
+
+        //Como os parâmetros de busca estão com a ordenação por descrição, deverá retornar a categoria "filmes".
+        Assertions.assertEquals(filmes.getId(), categories.elements().get(0).getId());
     }
 }
