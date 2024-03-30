@@ -7,7 +7,7 @@ import java.util.function.Function;
  * "Genre" e etc. */
 public record Pagination<T>(int currentPage, //É a página atual em que a paginação pertence.
                             int perPage, //Quantos registros temos por página.
-                            int totalElements, //Quantas informações temos no banco de dados.
+                            long totalElements, //Quantas informações temos no banco de dados.
                             List<T> elements //Os itens que serão retornados na página atual.
 ) {
 
