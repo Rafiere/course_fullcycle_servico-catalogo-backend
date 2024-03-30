@@ -9,6 +9,10 @@ import io.vavr.control.Either;
 import java.util.Objects;
 
 /* Aqui temos a implementação do caso de uso. */
+
+//@Named //Essa é uma anotação do "javax.inject", que é uma especificação do Java EE. O Spring
+//consegue identificar essa classe e fazer a injeção dela, porém, não vamos utilizar essa abordagem, e sim, vamos
+//criar esses beans manualmente na classe de infraestrutura.
 public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
 
     /* Sempre devemos fazer a injeção de dependências pelo construtor para evitarmos, por
