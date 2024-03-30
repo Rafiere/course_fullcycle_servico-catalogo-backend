@@ -1,5 +1,6 @@
 package com.projetopraticobackend.servicocatalogo.infrastructure;
 
+import com.projetopraticobackend.servicocatalogo.application.category.create.CreateCategoryUseCase;
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryRepository;
@@ -7,6 +8,7 @@ import com.projetopraticobackend.servicocatalogo.infrastructure.configuration.We
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.AbstractEnvironment;
 
@@ -26,16 +28,24 @@ public class Main {
 
     /* O código abaixo será executado depois que o contexto do Spring subir, e o Spring nos dará uma
     * instância do "CategoryRepository". */
-    @Bean
-    public ApplicationRunner runner(CategoryRepository repository){
-        return args -> {
-            List<CategoryJpaEntity> all = repository.findAll();
+//    @Bean
+//    public ApplicationRunner runner(CategoryRepository repository){
+//        return args -> {
+//            List<CategoryJpaEntity> all = repository.findAll();
+//
+//            Category filmes = Category.newCategory("Filmes", "Filmes de todos os gêneros.", true);
+//
+//            repository.saveAndFlush(CategoryJpaEntity.from(filmes));
+//
+//            repository.deleteAll();
+//        };
+//    }
 
-            Category filmes = Category.newCategory("Filmes", "Filmes de todos os gêneros.", true);
-
-            repository.saveAndFlush(CategoryJpaEntity.from(filmes));
-
-            repository.deleteAll();
-        };
-    }
+//    @Bean
+//    @DependsOnDatabaseInitialization //O Spring fará a injeção desse usecase. Esse método será executado apenas após a inicialização do banco de dados.
+//    public ApplicationRunner runner(CreateCategoryUseCase createCategoryUseCase){
+//        return args -> {
+//
+//        };
+//    }
 }
