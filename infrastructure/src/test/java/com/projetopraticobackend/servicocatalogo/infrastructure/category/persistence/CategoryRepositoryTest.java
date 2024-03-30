@@ -1,7 +1,7 @@
 package com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence;
 
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
-import com.projetopraticobackend.servicocatalogo.infrastructure.MySQLGatewayTest;
+import com.projetopraticobackend.servicocatalogo.MySQLGatewayTest;
 import org.hibernate.PropertyValueException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

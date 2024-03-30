@@ -3,7 +3,7 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.category;
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategorySearchQuery;
-import com.projetopraticobackend.servicocatalogo.infrastructure.MySQLGatewayTest;
+import com.projetopraticobackend.servicocatalogo.MySQLGatewayTest;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
