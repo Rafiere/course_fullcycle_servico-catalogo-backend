@@ -16,6 +16,13 @@ dependencies {
     * bibliotecas externas na camada de aplicação, nesses casos, podemos utilizar, se tivermos necessidade. */
     implementation group: 'io.vavr', name: 'vavr', version: '0.10.4' //Add "Vavr" no projeto.
 
+
+    /* Essa é a especificação do próprio Java para a injeção de dependência.
+    * Com isso, podemos comentar a classe "UseCaseConfig" e podemos apenas utilizar a anotação
+    * "@Named" na classe "DefaultCreateCategoryUseCase". Isso é possível porque o Spring consegue interpretar a
+    * anotação "@Named" do "javax.inject".*/
+//    implementation("javax.inject:javax.inject:1")
+
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.8.0'
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
