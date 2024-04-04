@@ -49,6 +49,8 @@ dependencies {
     testImplementation('org.flywaydb:flyway-core') //Estamos adicionando as migrations do Flyway nos testes. Assim, as migrações serão executadas para os testes.
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
+    implementation group: 'io.vavr', name: 'vavr', version: '0.10.4' //Add "Vavr" no projeto.
+
     testRuntimeOnly('com.h2database:h2')
 }
 
