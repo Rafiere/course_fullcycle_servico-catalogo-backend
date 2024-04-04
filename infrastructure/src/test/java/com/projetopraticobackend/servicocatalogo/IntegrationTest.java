@@ -1,6 +1,7 @@
 package com.projetopraticobackend.servicocatalogo;
 
 import com.projetopraticobackend.servicocatalogo.infrastructure.configuration.WebServerConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -21,6 +22,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ActiveProfiles("test")
+@ExtendWith(CleanUpExtension.class)
 @SpringBootTest(classes = WebServerConfig.class) //Essa é uma classe global de testes do Spring. O parâmetro "classes" permite que passemos uma classe de configuração com metadados para ele entender como quais configurações do Spring Boot ele precisa habilitar.
 public @interface IntegrationTest {
 }
