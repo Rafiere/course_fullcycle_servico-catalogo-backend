@@ -45,6 +45,8 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter-undertow') //Estamos adicionando o "Undertow" ao projeto.
     implementation('org.springframework.boot:spring-boot-starter-data-jpa') //Estamos adicionando o "Spring Data JPA" ao projeto.
+    implementation('org.springdoc:springdoc-openapi-webmvc-core:1.6.8') //Essa dependência interpretará o Spring para gerar a documentação.
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.8") //Essa dependência é responsável por gerar a interface gráfica da documentação. Para acessarmos a documentação, basta acessar o endereço "http://localhost:8085/swagger-ui/index.html".
 
     testImplementation('org.flywaydb:flyway-core') //Estamos adicionando as migrations do Flyway nos testes. Assim, as migrações serão executadas para os testes.
     testImplementation('org.springframework.boot:spring-boot-starter-test')
