@@ -1,8 +1,8 @@
-package com.projetopraticobackend.servicocatalogo.infrastructure.category.api.controllers;
+package com.projetopraticobackend.servicocatalogo.infrastructure.api.controllers;
 
 import com.projetopraticobackend.servicocatalogo.application.category.create.CreateCategoryUseCase;
 import com.projetopraticobackend.servicocatalogo.domain.pagination.Pagination;
-import com.projetopraticobackend.servicocatalogo.infrastructure.category.api.CategoryAPI;
+import com.projetopraticobackend.servicocatalogo.infrastructure.api.CategoryAPI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 

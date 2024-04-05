@@ -1,4 +1,4 @@
-package com.projetopraticobackend.servicocatalogo.infrastructure.category.api;
+package com.projetopraticobackend.servicocatalogo.infrastructure.api;
 
 /* Aqui teremos a documentação com o Spring Docs e os métodos que a API de "Category" fará a
  * exposição. */
