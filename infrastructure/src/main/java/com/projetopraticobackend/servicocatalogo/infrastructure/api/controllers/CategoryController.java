@@ -3,10 +3,13 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.api.controllers
 import com.projetopraticobackend.servicocatalogo.application.category.create.CreateCategoryCommand;
 import com.projetopraticobackend.servicocatalogo.application.category.create.CreateCategoryOutput;
 import com.projetopraticobackend.servicocatalogo.application.category.create.CreateCategoryUseCase;
+import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.GetCategoryByIdUseCase;
 import com.projetopraticobackend.servicocatalogo.domain.pagination.Pagination;
 import com.projetopraticobackend.servicocatalogo.domain.validation.handler.Notification;
 import com.projetopraticobackend.servicocatalogo.infrastructure.api.CategoryAPI;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CategoryAPIOutput;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CreateCategoryApiInput;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.presenters.CategoryApiPresenter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,9 +22,13 @@ public class CategoryController implements CategoryAPI {
 
     //Injetaremos os casos de uso que serão chamados pelo controller.
     private final CreateCategoryUseCase createCategoryUseCase;
+    private final GetCategoryByIdUseCase getCategoryByIdUseCase;
 
-    public CategoryController(final CreateCategoryUseCase createCategoryUseCase) {
+    public CategoryController(final CreateCategoryUseCase createCategoryUseCase,
+                              final GetCategoryByIdUseCase getCategoryByIdUseCase) {
+
         this.createCategoryUseCase = Objects.requireNonNull(createCategoryUseCase);
+        this.getCategoryByIdUseCase = Objects.requireNonNull(getCategoryByIdUseCase);
     }
 
     @Override
@@ -46,6 +53,15 @@ public class CategoryController implements CategoryAPI {
 
         return createCategoryUseCase.execute(command)
                 .fold(onError, onSuccess);
+    }
+
+    @Override
+    public CategoryAPIOutput getById(final String id) {
+        return CategoryApiPresenter.present(getCategoryByIdUseCase.execute(id));
+
+        //Ou usando o "apply()" para aplicar a função.
+        //TODO: Estudar sobre o "apply" e o "compose" do Java.
+//        return CategoryApiPresenter.present.compose(getCategoryByIdUseCase::execute).apply(id);
     }
 
     @Override
