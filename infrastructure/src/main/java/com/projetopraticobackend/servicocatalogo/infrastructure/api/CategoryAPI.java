@@ -4,6 +4,7 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.api;
  * exposição. */
 
 import com.projetopraticobackend.servicocatalogo.domain.pagination.Pagination;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CategoryAPIOutput;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CreateCategoryApiInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,15 +17,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 /* É recomendado deixarmos a documentação e as definições da API em uma interface e
-* as implementações do controller direto no controller. Isso é feito para não poluirmos muito
-* a classe "Controller" original. */
+ * as implementações do controller direto no controller. Isso é feito para não poluirmos muito
+ * a classe "Controller" original. */
 
 @RequestMapping("/categories")
 @Tag(name = "Categories") //É o nome do "resource" que estamos expondo.
 public interface CategoryAPI {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create a new category") //Aqui temos uma descrição do que o endpoint faz.
     @ApiResponses(value = { //Aqui temos as possíveis respostas desse endpoint.
             @ApiResponse(responseCode = "201", description = "Created successfully"),
@@ -45,4 +46,15 @@ public interface CategoryAPI {
                                  @RequestParam(name = "perPage", required = false, defaultValue = "10") final Integer perPage, //O Spring fará a conversão do "defaultValue" automaticamente, se necessário.
                                  @RequestParam(name = "sort", required = false, defaultValue = "name") final String sort,
                                  @RequestParam(name = "direction", required = false, defaultValue = "asc") final String direction);
+
+    @GetMapping(value = "{id}", //Receberemos um ID.
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get a category by it's identifier")
+    @ApiResponses(value = { //Aqui temos as possíveis respostas desse endpoint.
+            @ApiResponse(responseCode = "200", description = "Category retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Category was not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    CategoryAPIOutput getById(@PathVariable(name = "id") String id);
 }

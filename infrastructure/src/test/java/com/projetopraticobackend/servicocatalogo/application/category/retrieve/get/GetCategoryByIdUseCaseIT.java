@@ -5,6 +5,7 @@ import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryGateway;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
 import com.projetopraticobackend.servicocatalogo.domain.exceptions.DomainException;
+import com.projetopraticobackend.servicocatalogo.domain.exceptions.NotFoundException;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryJpaEntity;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
@@ -57,7 +58,7 @@ public class GetCategoryByIdUseCaseIT {
         final var expectedErrorMessage = "Category with ID 123 was not found";
         final var expectedId = CategoryID.from("123");
 
-        final var exception = Assertions.assertThrows(DomainException.class,
+        final var exception = Assertions.assertThrows(NotFoundException.class,
                 () -> getCategoryByIdUseCase.execute(expectedId.getValue()));
 
         Assertions.assertEquals(expectedErrorMessage, exception.getMessage());

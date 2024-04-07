@@ -1,10 +1,10 @@
 package com.projetopraticobackend.servicocatalogo.application.category.retrieve.get;
 
-import com.projetopraticobackend.servicocatalogo.application.category.delete.DefaultGetCategoryByIdUseCase;
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryGateway;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
 import com.projetopraticobackend.servicocatalogo.domain.exceptions.DomainException;
+import com.projetopraticobackend.servicocatalogo.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +65,7 @@ public class GetCategoryByIdUseCaseTest {
 
         Mockito.when(categoryGateway.findById(Mockito.eq(expectedId))).thenReturn(Optional.empty());
 
-        final var actualException = Assertions.assertThrows(DomainException.class,
+        final var actualException = Assertions.assertThrows(NotFoundException.class,
                 () -> defaultGetCategoryByIdUseCase.execute(expectedId.getValue()));
 
         Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
