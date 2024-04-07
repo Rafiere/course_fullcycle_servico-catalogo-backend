@@ -3,7 +3,7 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.configuration.u
 import com.projetopraticobackend.servicocatalogo.application.category.create.CreateCategoryUseCase;
 import com.projetopraticobackend.servicocatalogo.application.category.create.DefaultCreateCategoryUseCase;
 import com.projetopraticobackend.servicocatalogo.application.category.delete.DefaultDeleteCategoryUseCase;
-import com.projetopraticobackend.servicocatalogo.application.category.delete.DefaultGetCategoryByIdUseCase;
+import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.DefaultGetCategoryByIdUseCase;
 import com.projetopraticobackend.servicocatalogo.application.category.delete.DeleteCategoryUseCase;
 import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.GetCategoryByIdUseCase;
 import com.projetopraticobackend.servicocatalogo.application.category.retrieve.list.DefaultListCategoriesUseCase;
