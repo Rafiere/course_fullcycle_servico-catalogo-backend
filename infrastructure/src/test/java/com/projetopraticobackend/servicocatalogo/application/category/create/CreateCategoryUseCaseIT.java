@@ -54,7 +54,7 @@ public class CreateCategoryUseCaseIT {
         //Na vida real, não devemos utilizar o "get()" quando utilizamos o Optional.
         //O Brian Goetz, que é o criador da especificação do Optional, diz que se arrepende de
         //ter colocado esse método.
-        final var category = categoryRepository.findById(createdCategory.id().getValue()).get();
+        final var category = categoryRepository.findById(createdCategory.id()).get();
 
         Assertions.assertEquals(expectedName, category.getName());
         Assertions.assertEquals(expectedDescription, category.getDescription());
@@ -119,7 +119,7 @@ public class CreateCategoryUseCaseIT {
             //Na vida real, não devemos utilizar o "get()" quando utilizamos o Optional.
             //O Brian Goetz, que é o criador da especificação do Optional, diz que se arrepende de
             //ter colocado esse método.
-            final var category = categoryRepository.findById(createdCategory.id().getValue()).get();
+            final var category = categoryRepository.findById(createdCategory.id()).get();
 
             Assertions.assertEquals(expectedName, category.getName());
             Assertions.assertEquals(expectedDescription, category.getDescription());
