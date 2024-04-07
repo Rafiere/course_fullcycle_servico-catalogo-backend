@@ -1,10 +1,12 @@
-package com.projetopraticobackend.servicocatalogo.application.category.delete;
+package com.projetopraticobackend.servicocatalogo.application.category.retrieve.get;
 
 import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.CategoryOutput;
 import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.GetCategoryByIdUseCase;
+import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryGateway;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
 import com.projetopraticobackend.servicocatalogo.domain.exceptions.DomainException;
+import com.projetopraticobackend.servicocatalogo.domain.exceptions.NotFoundException;
 import com.projetopraticobackend.servicocatalogo.domain.validation.Error;
 
 public class DefaultGetCategoryByIdUseCase extends GetCategoryByIdUseCase {
@@ -22,6 +24,6 @@ public class DefaultGetCategoryByIdUseCase extends GetCategoryByIdUseCase {
 
         return this.categoryGateway.findById(categoryId)
                 .map(CategoryOutput::from)
-                .orElseThrow(() -> DomainException.with(new Error("Category with ID %s was not found".formatted(id))));
+                .orElseThrow(() -> NotFoundException.with(Category.class, CategoryID.from(id)));
     }
 }
