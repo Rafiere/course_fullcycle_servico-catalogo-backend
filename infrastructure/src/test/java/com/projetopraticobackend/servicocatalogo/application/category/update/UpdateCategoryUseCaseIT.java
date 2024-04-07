@@ -65,7 +65,7 @@ public class UpdateCategoryUseCaseIT {
         Assertions.assertEquals(expectedIsActive, updatedCategoryFound.isActive());
 
         Assertions.assertNotNull(updatedCategoryFound.getUpdatedAt());
-        Assertions.assertTrue(updatedCategoryFound.getCreatedAt().isBefore(categoryToBeUpdated.getUpdatedAt()));
+        Assertions.assertTrue(updatedCategoryFound.getUpdatedAt().isAfter(categoryToBeUpdated.getUpdatedAt()));
         Assertions.assertNull(updatedCategoryFound.getDeletedAt());
     }
 
@@ -123,7 +123,7 @@ public class UpdateCategoryUseCaseIT {
         Assertions.assertEquals(expectedIsActive, updatedCategoryFound.isActive());
 
         Assertions.assertNotNull(updatedCategoryFound.getUpdatedAt());
-        Assertions.assertTrue(updatedCategoryFound.getCreatedAt().isBefore(categoryToBeUpdated.getUpdatedAt()));
+        Assertions.assertTrue(updatedCategoryFound.getUpdatedAt().isAfter(categoryToBeUpdated.getUpdatedAt()));
         Assertions.assertNotNull(updatedCategoryFound.getDeletedAt());
     }
 
