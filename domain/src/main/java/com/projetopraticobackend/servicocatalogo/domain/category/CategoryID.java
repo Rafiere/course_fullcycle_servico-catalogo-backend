@@ -34,10 +34,6 @@ public class CategoryID extends Identifier {
         return new CategoryID(anId.toString().toLowerCase());
     }
 
-    public String getValue() {
-        return value;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,5 +45,10 @@ public class CategoryID extends Identifier {
     @Override
     public int hashCode() {
         return Objects.hash(getValue());
+    }
+
+    @Override
+    public String getValue() {
+        return value;
     }
 }

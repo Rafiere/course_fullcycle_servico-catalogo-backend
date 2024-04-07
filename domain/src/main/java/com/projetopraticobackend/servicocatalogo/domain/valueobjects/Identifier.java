@@ -1,4 +1,8 @@
 package com.projetopraticobackend.servicocatalogo.domain.valueobjects;
 
-public class Identifier {
+import com.projetopraticobackend.servicocatalogo.domain.ValueObject;
+
+public abstract class Identifier extends ValueObject {
+
+    public abstract String getValue();
 }
