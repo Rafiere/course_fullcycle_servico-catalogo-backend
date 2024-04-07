@@ -4,6 +4,7 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.api;
  * exposição. */
 
 import com.projetopraticobackend.servicocatalogo.domain.pagination.Pagination;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CreateCategoryApiInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /* É recomendado deixarmos a documentação e as definições da API em uma interface e
 * as implementações do controller direto no controller. Isso é feito para não poluirmos muito
@@ -28,7 +31,7 @@ public interface CategoryAPI {
             @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
-    ResponseEntity<?> createCategory();
+    ResponseEntity<?> createCategory(@RequestBody @Valid CreateCategoryApiInput input); //O "@Valid" serve para validarmos o input já na entrada do controller.
 
     @GetMapping
     @Operation(summary = "List all categories paginated")
