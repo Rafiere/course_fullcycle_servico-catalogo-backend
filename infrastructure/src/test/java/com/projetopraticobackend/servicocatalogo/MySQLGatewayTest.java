@@ -13,6 +13,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.lang.annotation.*;
 import java.util.Collection;
 
+/* Essa anotação subirá apenas o contexto pertinente a persistência. */
+
 @Target(ElementType.TYPE) //Essa anotação será utilizada para definir onde essa anotação poderá ser utilizada.
 @Retention(RetentionPolicy.RUNTIME) //Essa anotação será utilizada para definir até quando essa anotação estará disponível.
 @Inherited //Essa anotação será utilizada para definir que essa anotação poderá ser herdada.

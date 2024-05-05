@@ -18,6 +18,8 @@ import java.lang.annotation.*;
 * os "mocks" do Mockito, e sim mocks reais, ou seja, persistiremos as informações no banco de
 * dados em memória e interagiremos com ela através dos "usecases". */
 
+/* Essa anotação subirá todo o contexto do Spring. */
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
