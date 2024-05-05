@@ -1,7 +1,7 @@
 package com.projetopraticobackend.servicocatalogo.infrastructure.category.presenters;
 
 import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.CategoryOutput;
-import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CategoryAPIOutput;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CategoryApiOutput;
 
 import java.util.function.Function;
 
@@ -15,8 +15,8 @@ import java.util.function.Function;
 * feito, mas está comentado abaixo. */
 public interface CategoryApiPresenter {
 
-    Function<CategoryOutput, CategoryAPIOutput> present =
-        output -> new CategoryAPIOutput(
+    Function<CategoryOutput, CategoryApiOutput> present =
+        output -> new CategoryApiOutput(
                 output.id().getValue(),
                 output.name(),
                 output.description(),
@@ -26,8 +26,8 @@ public interface CategoryApiPresenter {
                 output.deletedAt()
         );
 
-    static CategoryAPIOutput present(final CategoryOutput categoryOutput){
-        return new CategoryAPIOutput(
+    static CategoryApiOutput present(final CategoryOutput categoryOutput){
+        return new CategoryApiOutput(
                 categoryOutput.id().getValue(),
                 categoryOutput.name(),
                 categoryOutput.description(),
