@@ -22,8 +22,7 @@ public class GlobalExceptionHandler {
                                                    final HttpServletRequest httpServletRequest,
                                                    final HttpServletResponse httpServletResponse) {
 
-        return ResponseEntity.unprocessableEntity()
-                .body(ApiError.from(ex));
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ApiError.from(ex));
     }
 
     @ExceptionHandler(value = NotFoundException.class) //Quando uma "NotFoundException" ocorrer, esse método será chamado.
