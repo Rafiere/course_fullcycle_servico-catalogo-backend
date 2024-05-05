@@ -58,7 +58,7 @@ public class UpdateCategoryUseCaseIT {
         Assertions.assertNotNull(updatedCategory);
         Assertions.assertNotNull(updatedCategory.id());
 
-        final var updatedCategoryFound = categoryRepository.findById(updatedCategory.id().getValue()).get();
+        final var updatedCategoryFound = categoryRepository.findById(updatedCategory.id()).get();
 
         Assertions.assertEquals(expectedName, updatedCategoryFound.getName());
         Assertions.assertEquals(expectedDescription, updatedCategoryFound.getDescription());
@@ -116,7 +116,7 @@ public class UpdateCategoryUseCaseIT {
         Assertions.assertNotNull(updatedCategory);
         Assertions.assertNotNull(updatedCategory.id());
 
-        final var updatedCategoryFound = categoryRepository.findById(updatedCategory.id().getValue()).get();
+        final var updatedCategoryFound = categoryRepository.findById(updatedCategory.id()).get();
 
         Assertions.assertEquals(expectedName, updatedCategoryFound.getName());
         Assertions.assertEquals(expectedDescription, updatedCategoryFound.getDescription());
