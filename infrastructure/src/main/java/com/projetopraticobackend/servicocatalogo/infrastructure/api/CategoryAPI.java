@@ -4,8 +4,9 @@ package com.projetopraticobackend.servicocatalogo.infrastructure.api;
  * exposição. */
 
 import com.projetopraticobackend.servicocatalogo.domain.pagination.Pagination;
-import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CategoryAPIOutput;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CategoryApiOutput;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CreateCategoryApiInput;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.UpdateCategoryApiInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -32,6 +33,7 @@ public interface CategoryAPI {
             @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
+    //Estamos retornando um "ResponseEntity<?>" pois podemos retornar desde um "data model" de erro até uma resposta propriamente dita.
     ResponseEntity<?> createCategory(@RequestBody @Valid CreateCategoryApiInput input); //O "@Valid" serve para validarmos o input já na entrada do controller.
 
     @GetMapping
@@ -56,5 +58,17 @@ public interface CategoryAPI {
             @ApiResponse(responseCode = "404", description = "Category was not found"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
-    CategoryAPIOutput getById(@PathVariable(name = "id") String id);
+    CategoryApiOutput getById(@PathVariable(name = "id") String id);
+
+    @PutMapping(value = "{id}", //Receberemos um ID.
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update a category by it's identifier")
+    @ApiResponses(value = { //Aqui temos as possíveis respostas desse endpoint.
+            @ApiResponse(responseCode = "200", description = "Category updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Category was not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> updateById(@PathVariable(name = "id") String id,
+                                 @RequestBody UpdateCategoryApiInput input);
 }
