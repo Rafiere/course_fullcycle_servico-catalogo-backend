@@ -6,6 +6,8 @@ import com.projetopraticobackend.servicocatalogo.application.category.create.Cre
 import com.projetopraticobackend.servicocatalogo.application.category.create.CreateCategoryUseCase;
 import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.CategoryOutput;
 import com.projetopraticobackend.servicocatalogo.application.category.retrieve.get.GetCategoryByIdUseCase;
+import com.projetopraticobackend.servicocatalogo.application.category.update.UpdateCategoryOutput;
+import com.projetopraticobackend.servicocatalogo.application.category.update.UpdateCategoryUseCase;
 import com.projetopraticobackend.servicocatalogo.domain.category.Category;
 import com.projetopraticobackend.servicocatalogo.domain.category.CategoryID;
 import com.projetopraticobackend.servicocatalogo.domain.exceptions.DomainException;
@@ -13,6 +15,7 @@ import com.projetopraticobackend.servicocatalogo.domain.exceptions.NotFoundExcep
 import com.projetopraticobackend.servicocatalogo.domain.validation.Error;
 import com.projetopraticobackend.servicocatalogo.domain.validation.handler.Notification;
 import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.CreateCategoryApiInput;
+import com.projetopraticobackend.servicocatalogo.infrastructure.category.models.UpdateCategoryApiInput;
 import io.vavr.API;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -32,6 +35,9 @@ import java.util.Objects;
 @ControllerTest(controllers = CategoryAPI.class)
 //Apenas será feito o "scan" do controller "CategoryAPI". Os "components" e "services" não terão o scan realizado.
 //Dessa forma, teremos que realizar o mock dos components e services.
+
+//A anotação acima apenas fará o "scan" do que estiver anotado como "@Controller" ou "@RestController".
+//Não será feito o "scan" dos "components" e dos "services", por isso, deveremos realizar o "mock" desses components.
 public class CategoryAPITest {
 
     @Autowired
@@ -40,12 +46,14 @@ public class CategoryAPITest {
     @Autowired
     private MockMvc mockMvc; //Esse é um helper que nos auxiliará a fazer chamadas REST para os controllers que estamos passando na anotação.
 
-    @MockBean
-    //Estamos dizendo para o Spring que temos que criar uma versão desse bean totalmente mockada, porque, por padrão, o "@WebMvcTest" não carrega o contexto de "services" e "components".
+    @MockBean //Estamos dizendo para o Spring que temos que criar uma versão desse bean totalmente mockada, porque, por padrão, o "@WebMvcTest" não carrega o contexto de "services" e "components".
     private CreateCategoryUseCase createCategoryUseCase;
 
     @MockBean
     private GetCategoryByIdUseCase getCategoryByIdUseCase;
+
+    @MockBean
+    private UpdateCategoryUseCase updateCategoryUseCase;
 
     /* Esse será um teste de integração pois estamos fazendo a chamada HTTP real para o endpoint. Mesmo que estejamos
      * mockando o usecase, o controller está realmente sendo chamado, por isso temos um teste de integração. */
@@ -83,9 +91,9 @@ public class CategoryAPITest {
          * caso de uso está correto, ou seja, que o controller converteu corretamente a request em um command para o
          * caso de uso. */
         Mockito.verify(createCategoryUseCase, Mockito.times(1)).execute(Mockito.argThat(
-                command -> command.name().equals(expectedName) &&
-                           command.description().equals(expectedDescription) &&
-                           command.isActive() == expectedIsActive
+                command -> Objects.equals(command.name(), expectedName) &&
+                           Objects.equals(command.description(), expectedDescription) &&
+                           Objects.equals(command.isActive(), expectedIsActive)
         ));
     }
 
@@ -233,5 +241,40 @@ public class CategoryAPITest {
                 .andExpect(MockMvcResultMatchers.header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.hasSize(0)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.equalTo(expectedErrorMessage)));
+    }
+
+    @Test
+    public void givenAValidCommand_whenCallsUpdateCategory_shouldReturnCategoryId() throws Exception {
+
+        //given
+        final var expectedId = "123";
+        final var expectedName = "Filmes";
+        final var expectedDescription = "A categoria mais assistida";
+        final var expectedIsActive = true;
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(API.Right(UpdateCategoryOutput.from(expectedId)));
+
+        //when
+        final var request = MockMvcRequestBuilders.put("/categories/{id}", expectedId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new UpdateCategoryApiInput(expectedName, expectedDescription, expectedIsActive)))
+                .accept(MediaType.APPLICATION_JSON_VALUE);
+
+        final var response = mockMvc.perform(request)
+                .andDo(MockMvcResultHandlers.print());
+
+        //then
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.equalTo(expectedId)));
+
+        //Estamos nos certificando que os argumentos passados para o "UpdateCategoryUseCase" estão corretos.
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(Mockito.argThat(
+                command -> command.id().equals(expectedId) &&
+                           command.name().equals(expectedName) &&
+                           command.description().equals(expectedDescription) &&
+                           command.isActive() == expectedIsActive
+        ));
     }
 }
